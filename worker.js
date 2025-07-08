@@ -92,6 +92,7 @@ export default {
       const good = GOODS.find(g => g.id === tid);
       if (!good) return new Response('Bad ID', {status:400});
 
+      // env передаем вторым параметром согласно новому API
       const invoice = await createInvoice(good, env);
       return html(`
         <h2>Оплата — ${escape(good.name)}</h2>
@@ -116,6 +117,7 @@ export default {
       const good = GOODS.find(g => g.id === tid);
       if (!good) return new Response('bad', {status:400});
 
+      // env передаем вторым параметром согласно новому API
       const paid = await isPaid(inv, env);
       if (!paid)
         return html("<p>Платёж ещё не подтверждён.</p><a href=\"/shop\">← Назад</a>");
