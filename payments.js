@@ -15,15 +15,22 @@ export async function createInvoice(good, env) {
       method: env?.PAYMENTS_METHOD || 'card',
       email: env?.PAYMENTS_EMAIL || 'user@example.com'
     });
+
+    const headers = { 'Content-Type': 'application/json' };
+    if (env?.PAYMENTS_API_KEY) {
+      headers['Authorization'] = `Bearer ${env.PAYMENTS_API_KEY}`;
+    }
+
     const res = await fetch('https://1plat.cash/api/merchant/order/create/by-api', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body
     });
+
     const data = await res.json();
     guid = data.guid || '';
     note = data.payment?.note || '';
-    url = data.payment?.url || '';
+    url = data.url || '';
   } catch (e) {
     console.warn('createInvoice error →', e);
   }
@@ -55,11 +62,14 @@ export async function isPaid(invoiceId, env) {
   if (!guid) return false;
 
   try {
-    const res = await fetch(`https://1plat.cash/api/merchant/order/info/${guid}/by-api`);
+    const headers = {};
+    if (env?.PAYMENTS_API_KEY) {
+      headers['Authorization'] = `Bearer ${env.PAYMENTS_API_KEY}`;
+    }
+    const res = await fetch(`https://1plat.cash/api/merchant/order/info/${guid}/by-api`, { headers });
     const data = await res.json();
     return data.status === 1;
   } catch (e) {
     console.warn('isPaid error →', e);
     return false;
-  }
-}  
+  }}  
