@@ -92,7 +92,7 @@ export default {
       const good = GOODS.find(g => g.id === tid);
       if (!good) return new Response('Bad ID', {status:400});
 
-      const invoice = await createInvoice(good);   // пока заглушка
+      const invoice = await createInvoice(good, env);
       return html(`
         <h2>Оплата — ${escape(good.name)}</h2>
         <p>Переведите <b>${good.price} ₽</b> на реквизиты:</p>
@@ -116,7 +116,7 @@ export default {
       const good = GOODS.find(g => g.id === tid);
       if (!good) return new Response('bad', {status:400});
 
-      const paid = await isPaid(inv);              // сейчас всегда true
+      const paid = await isPaid(inv, env);
       if (!paid)
         return html("<p>Платёж ещё не подтверждён.</p><a href=\"/shop\">← Назад</a>");
 
