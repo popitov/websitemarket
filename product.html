@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Доступ в закрытый канал Hardcores — Hardcores Shop</title>
+  <meta name="description" content="Пример страницы товара для статической витрины Hardcores Shop.">
+  <meta name="theme-color" content="#04050b" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <div class="container nav">
+      <div class="brand">
+        <a href="index.html">
+          <span aria-hidden="true">🏪</span>
+          <span>Hardcores Shop</span>
+        </a>
+      </div>
+      <nav class="nav-links">
+        <a href="index.html">Каталог</a>
+        <a href="cart.html">Корзина <span class="badge" id="cart-count">2</span></a>
+        <a href="account.html">Мой доступ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <section class="section">
+        <div class="product-detail">
+          <div class="card detail-card">
+            <span class="tag">Цифровой товар</span>
+            <h1>Доступ в закрытый канал Hardcores</h1>
+            <div class="product-meta">
+              <span class="badge soft">Тип: channel</span>
+              <span class="muted">ID #101</span>
+            </div>
+            <div class="product-desc">Годовая подписка на приватный канал: новости, подборки и живые сессии. Если автоматическая выдача временно не доступна, честно покажем заглушку и расскажем, что делать.</div>
+
+            <ul class="feature-list">
+              <li>Мгновенная выдача после оплаты через личный кабинет и Telegram.</li>
+              <li>Защищённый доступ — можно обновить ссылку в один клик.</li>
+              <li>Поддержка в течение 24 часов: свяжитесь с нами, если что-то пойдёт не так.</li>
+            </ul>
+
+            <p class="muted">После оплаты вы получите приватную ссылку на канал. Если автоматическая выдача недоступна, появится кнопка-заглушка и напоминание написать в поддержку.</p>
+          </div>
+
+          <aside class="card detail-card buy-panel">
+            <div>
+              <div class="price large">2 490 ₽</div>
+              <p class="muted">Базовая стоимость. Для подписки доступны несколько длительностей — выбирайте подходящую.</p>
+            </div>
+
+            <form class="buy-form">
+              <label>Длительность доступа
+                <select>
+                  <option selected>1 месяц — 590 ₽</option>
+                  <option>3 месяца — 1 490 ₽</option>
+                  <option>12 месяцев — 2 490 ₽</option>
+                </select>
+              </label>
+              <button class="btn primary" type="button" onclick="location.href='cart.html'">Добавить в корзину</button>
+            </form>
+
+            <div class="secure-note">Оплата проходит в демо‑режиме. Если платёжный метод ещё в разработке, покажем заглушку с QR или инструкцией и уведомим во всплывающем сообщении.</div>
+          </aside>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div>Hardcores Shop — MVP витрина цифровых продуктов. Оплата и выдача доступа работают в демо‑режиме.</div>
+      <div class="muted">Если часть функциональности ещё не готова, мы покажем заглушку и уведомим вас внутри интерфейса.</div>
+    </div>
+  </footer>
+</div>
+
+<script src="static/js/main.js"></script>
+</body>
+</html>

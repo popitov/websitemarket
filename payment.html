@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Оплата — Hardcores Shop</title>
+  <meta name="description" content="Заглушка оплаты для статической витрины Hardcores Shop.">
+  <meta name="theme-color" content="#04050b" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <div class="container nav">
+      <div class="brand">
+        <a href="index.html">
+          <span aria-hidden="true">🏪</span>
+          <span>Hardcores Shop</span>
+        </a>
+      </div>
+      <nav class="nav-links">
+        <a href="index.html">Каталог</a>
+        <a href="cart.html">Корзина <span class="badge" id="cart-count">2</span></a>
+        <a href="account.html">Мой доступ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <section class="section">
+        <div class="section-heading">
+          <h1>Оплата</h1>
+          <span class="tag">Подтверждение платежа</span>
+        </div>
+
+        <div class="card pad pay-card" id="pay-block">
+          <div><strong>Сумма к оплате:</strong> 3 400 ₽</div>
+          <p class="muted">Мы формируем платёж. Если реальная интеграция ещё не подключена, показываем заглушку с QR или ссылкой — так пользователь понимает, как будет выглядеть процесс.</p>
+
+          <div class="center">
+            <div class="spinner">Готовим QR…</div>
+            <div class="card" style="margin-top:16px; padding:24px; display:inline-block;">
+              <div class="muted">QR появится здесь, как только платёжный шлюз подключим.</div>
+            </div>
+          </div>
+
+          <div class="center" style="margin-top: 24px;">
+            <p>Не удалось автоматически получить QR? Это демонстрация: откройте ссылку вручную.</p>
+            <a class="btn" href="#">Открыть страницу оплаты</a>
+          </div>
+
+          <div class="status-indicator">Ожидаем подтверждение оплаты…</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div>Hardcores Shop — MVP витрина цифровых продуктов. Оплата и выдача доступа работают в демо‑режиме.</div>
+      <div class="muted">Если часть функциональности ещё не готова, мы покажем заглушку и уведомим вас внутри интерфейса.</div>
+    </div>
+  </footer>
+</div>
+
+<script src="static/js/main.js"></script>
+</body>
+</html>
