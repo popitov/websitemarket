@@ -233,40 +233,80 @@ def checkout():
                     if promo.get('max_discount') and disc > int(promo['max_discount']):
                         disc = int(promo['max_discount'])
                 total = max(0, total - disc)
+    method = (request.form.get('method') or 'sbp').lower()
     payment_id = str(uuid.uuid4())
-    payload = {
-        "paymentMethod": 2,   # SBP
-        "id": payment_id,
-        "paymentDetails": {"amount": total, "currency": "RUB"},
-        "description": "Оплата заказа в витрине",
-        "return": f"{config.SITE_URL}/payment/{payment_id}",
-        "failedUrl": f"{config.SITE_URL}/payment/{payment_id}?failed=1",
-        "payload": "ORDER_PAYLOAD"
-    }
-    headers = {
-        "Content-Type": "application/json",
-        "X-MerchantId": config.PLATEGA_MERCHANT_ID,
-        "X-Secret": config.PLATEGA_API_KEY
-    }
-    try:
-        resp = requests.post(config.PLATEGA_CREATE_URL, json=payload, headers=headers, timeout=30)
-        data = resp.json()
-        redirect_url = data.get('redirect')
-        if not redirect_url:
-            raise RuntimeError('No redirect URL from Platega')
-    except Exception as e:
-        current_app.logger.exception(e)
-        flash("Ошибка инициализации платежа", "error")
-        return redirect(url_for('main.view_cart'))
-    # сохраняем заказ в памяти
-    PENDING_ORDERS[payment_id] = {
-        "user_id": int(session.get('user_id') or -1),
-        "items": enriched['items'],
-        "total": total,
-        "redirect_url": redirect_url,
-        "delivered": False,
-        "created_at": int(time.time())
-    }
+    if method == 'crypto':
+        payload = {
+            "currency_type": "fiat",
+            "fiat": "RUB",
+            "amount": str(total)
+        }
+        headers = {
+            "Content-Type": "application/json",
+            "Crypto-Pay-API-Token": config.CRYPTO_PAY_TOKEN
+        }
+        try:
+            resp = requests.post(f"{config.CRYPTO_PAY_BASE_URL}/createInvoice", json=payload, headers=headers, timeout=30)
+            data = resp.json()
+            result = data.get('result') or {}
+            invoice_id = None
+            redirect_url = None
+            if isinstance(result, dict):
+                invoice_id = result.get('invoice_id')
+                redirect_url = result.get('pay_url')
+            elif isinstance(result, list) and result:
+                invoice_id = result[0].get('invoice_id')
+                redirect_url = result[0].get('pay_url')
+            if not (redirect_url and invoice_id):
+                raise RuntimeError('No invoice data from CryptoBot')
+        except Exception as e:
+            current_app.logger.exception(e)
+            flash("Ошибка инициализации крипто-платежа", "error")
+            return redirect(url_for('main.view_cart'))
+        PENDING_ORDERS[payment_id] = {
+            "user_id": int(session.get('user_id') or -1),
+            "items": enriched['items'],
+            "total": total,
+            "redirect_url": redirect_url,
+            "invoice_id": invoice_id,
+            "method": "crypto",
+            "delivered": False,
+            "created_at": int(time.time())
+        }
+    else:
+        payload = {
+            "paymentMethod": 2,   # SBP
+            "id": payment_id,
+            "paymentDetails": {"amount": total, "currency": "RUB"},
+            "description": "Оплата заказа в витрине",
+            "return": f"{config.SITE_URL}/payment/{payment_id}",
+            "failedUrl": f"{config.SITE_URL}/payment/{payment_id}?failed=1",
+            "payload": "ORDER_PAYLOAD"
+        }
+        headers = {
+            "Content-Type": "application/json",
+            "X-MerchantId": config.PLATEGA_MERCHANT_ID,
+            "X-Secret": config.PLATEGA_API_KEY
+        }
+        try:
+            resp = requests.post(config.PLATEGA_CREATE_URL, json=payload, headers=headers, timeout=30)
+            data = resp.json()
+            redirect_url = data.get('redirect')
+            if not redirect_url:
+                raise RuntimeError('No redirect URL from Platega')
+        except Exception as e:
+            current_app.logger.exception(e)
+            flash("Ошибка инициализации платежа", "error")
+            return redirect(url_for('main.view_cart'))
+        PENDING_ORDERS[payment_id] = {
+            "user_id": int(session.get('user_id') or -1),
+            "items": enriched['items'],
+            "total": total,
+            "redirect_url": redirect_url,
+            "method": "sbp",
+            "delivered": False,
+            "created_at": int(time.time())
+        }
     # переходим на нашу страницу оплаты (покажем QR и будем опрашивать статус)
     return redirect(url_for('main.payment', payment_id=payment_id))
 
@@ -275,8 +315,9 @@ def payment(payment_id: str):
     order = PENDING_ORDERS.get(payment_id)
     if not order:
         # Возможно возврат с Platega returnUrl — покажем заглушку
-        return render_template('payment.html', payment_id=payment_id, amount=0, redirect_url=None)
-    return render_template('payment.html', payment_id=payment_id, amount=order['total'], redirect_url=order['redirect_url'])
+        return render_template('payment.html', payment_id=payment_id, amount=0, redirect_url=None, is_crypto=False)
+    return render_template('payment.html', payment_id=payment_id, amount=order['total'],
+                           redirect_url=order['redirect_url'], is_crypto=(order.get('method') == 'crypto'))
 
 @main_bp.route('/api/platega_qr/<payment_id>')
 def api_platega_qr(payment_id: str):
@@ -317,23 +358,56 @@ def api_platega_qr(payment_id: str):
 @main_bp.route('/api/payment_status/<payment_id>')
 def api_payment_status(payment_id: str):
     order = PENDING_ORDERS.get(payment_id)
+    if not order:
+        return jsonify({"ok": False, "status": "error", "message": "order not found"}), 404
+    if order.get('method') == 'crypto':
+        invoice_id = order.get('invoice_id')
+        if not invoice_id:
+            return jsonify({"ok": False, "status": "error", "message": "invoice missing"}), 200
+        headers = {"Crypto-Pay-API-Token": config.CRYPTO_PAY_TOKEN}
+        try:
+            resp = requests.get(f"{config.CRYPTO_PAY_BASE_URL}/getInvoices", params={"invoice_ids": invoice_id},
+                                headers=headers, timeout=20)
+            data = resp.json()
+        except Exception:
+            return jsonify({"ok": False, "status": "error", "message": "status check failed"}), 200
+        status = None
+        if data.get('ok'):
+            result = data.get('result')
+            if isinstance(result, dict):
+                if result.get('items'):
+                    status = str(result['items'][0].get('status') or '').lower()
+                elif result.get('status'):
+                    status = str(result.get('status') or '').lower()
+            elif isinstance(result, list) and result:
+                status = str(result[0].get('status') or '').lower()
+        if status in {"paid", "completed"}:
+            if not order.get('delivered') and not db.is_payment_processed(payment_id):
+                _deliver_order(payment_id, order)
+                order['delivered'] = True
+            return jsonify({"ok": True, "status": "confirmed"})
+        if status in {"active", "pending"}:
+            return jsonify({"ok": True, "status": "pending"})
+        if status:
+            return jsonify({"ok": True, "status": status})
+        return jsonify({"ok": False, "status": "error", "message": "status parse failed"}), 200
     status_url = config.PLATEGA_STATUS_URL.format(payment_id=payment_id)
     headers = {"X-MerchantId": config.PLATEGA_MERCHANT_ID, "X-Secret": config.PLATEGA_API_KEY}
     try:
         resp = requests.get(status_url, headers=headers, timeout=20)
         data = resp.json()
         status = (data.get('status') or '').lower()
-    except Exception as e:
+    except Exception:
         return jsonify({"ok": False, "status": "error", "message": "status check failed"}), 200
     success_states = {"successful", "success", "completed", "paid", "confirmed"}
     if status in success_states:
-        if order and not order.get('delivered') and not db.is_payment_processed(payment_id):
+        if not order.get('delivered') and not db.is_payment_processed(payment_id):
             _deliver_order(payment_id, order)
+            order['delivered'] = True
         return jsonify({"ok": True, "status": "confirmed"})
-    elif status in {"pending", "processing", "created"}:
+    if status in {"pending", "processing", "created"}:
         return jsonify({"ok": True, "status": "pending"})
-    else:
-        return jsonify({"ok": True, "status": status})
+    return jsonify({"ok": True, "status": status})
 
 @main_bp.route('/account')
 def account():

@@ -8,9 +8,20 @@
 
   <div class="card pad pay-card" id="pay-block">
     {% if amount and amount > 0 %}
-    <div><strong>Сумма к оплате:</strong> {{ amount }} ₽</div>
+    <div class="center"><strong>Сумма к оплате:</strong> {{ amount }} ₽</div>
     {% endif %}
-    <p class="muted">Мы формируем платёж. Если реальная интеграция ещё не подключена, показываем заглушку с QR или ссылкой — вы всё равно увидите, как будет выглядеть процесс.</p>
+
+    {% if is_crypto %}
+    <p class="muted">Оплата проходит через CryptoBot. Откройте счёт в Telegram, завершите оплату и вернитесь на эту страницу, чтобы проверить статус вручную.</p>
+    <div class="center">
+      {% if redirect_url %}
+      <a class="btn" href="{{ redirect_url }}" target="_blank" rel="noopener">🔗 Открыть CryptoBot для оплаты</a>
+      {% else %}
+      <span class="muted">Ссылка на оплату недоступна. Попробуйте создать заказ заново.</span>
+      {% endif %}
+    </div>
+    {% else %}
+    <p class="muted">Отсканируйте QR-код через приложение банка для оплаты по СБП. Если QR не появится автоматически, откройте страницу оплаты вручную.</p>
 
     <div id="qr-wrap" class="center">
       <div id="qr-loading" class="spinner">Готовим QR…</div>
@@ -18,18 +29,24 @@
     </div>
 
     <div id="fallback" class="center" style="display:none">
-      <p>Не удалось автоматически получить QR. Это заглушка: откройте ссылку вручную.</p>
+      <p>Не удалось автоматически получить QR. Откройте страницу оплаты вручную.</p>
       {% if redirect_url %}
-        <a class="btn" href="{{ redirect_url }}" target="_blank">Открыть страницу оплаты</a>
+        <a class="btn" href="{{ redirect_url }}" target="_blank" rel="noopener">Открыть страницу оплаты</a>
       {% endif %}
     </div>
+    {% endif %}
 
-    <div id="status" class="status-indicator">Ожидаем подтверждение оплаты…</div>
+    <div class="center" style="margin-top: 1.5rem;">
+      <button id="check-btn" class="btn" type="button" onclick="checkStatus()">☑️ Проверить платёж</button>
+      <div id="status" class="status-indicator">Ожидаем подтверждения оплаты…</div>
+    </div>
   </div>
 </section>
 
 <script>
 const pid = "{{ payment_id }}";
+const isCrypto = {{ 'true' if is_crypto else 'false' }};
+
 async function loadQR() {
   try {
     const r = await fetch(`/api/platega_qr/${pid}`);
@@ -48,24 +65,30 @@ async function loadQR() {
     document.getElementById('fallback').style.display = 'block';
   }
 }
-async function pollStatus() {
+
+async function checkStatus() {
+  const statusNode = document.getElementById('status');
+  statusNode.innerText = 'Проверяем платёж…';
   try {
     const r = await fetch(`/api/payment_status/${pid}`);
     const data = await r.json();
     if (data.ok && data.status === 'confirmed') {
-      document.getElementById('status').innerText = '✅ Оплата подтверждена! Перенаправляем…';
+      statusNode.innerText = '✅ Оплата подтверждена! Перенаправляем…';
       setTimeout(() => { window.location = '/account'; }, 1200);
-    } else if (data.status === 'pending') {
-      setTimeout(pollStatus, {{ cfg.PAYMENT_POLL_INTERVAL }} * 1000);
+    } else if (data.ok && data.status === 'pending') {
+      statusNode.innerText = '⚠️ Платёж пока не подтверждён. Попробуйте чуть позже.';
+    } else if (data.ok) {
+      statusNode.innerText = `❌ Платёж не завершён (статус: ${data.status || 'неизвестно'})`;
     } else {
-      // ошибка или иное состояние
-      setTimeout(pollStatus, {{ cfg.PAYMENT_POLL_INTERVAL }} * 1000);
+      statusNode.innerText = 'Ошибка при проверке статуса платежа.';
     }
   } catch (e) {
-    setTimeout(pollStatus, {{ cfg.PAYMENT_POLL_INTERVAL }} * 1000);
+    statusNode.innerText = 'Ошибка при проверке статуса платежа.';
   }
 }
-loadQR();
-pollStatus();
+
+if (!isCrypto) {
+  loadQR();
+}
 </script>
 {% endblock %}
