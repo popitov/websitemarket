@@ -1,23 +1,41 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Товары</h1>
-<p><a class="btn primary" href="{{ url_for('admin.new_tariff') }}">+ Новый товар</a></p>
-<table class="table">
-  <tr><th>ID</th><th>Название</th><th>Цена</th><th>Тип</th><th>Категория</th><th></th></tr>
-  {% for t in tariffs %}
-  <tr>
-    <td>{{ t.id }}</td>
-    <td>{{ t.name }}</td>
-    <td>{{ t.price }} ₽</td>
-    <td>{{ t.t_type }}</td>
-    <td>{{ t.category_name or '—' }}</td>
-    <td>
-      <a class="link" href="{{ url_for('admin.edit_tariff', tariff_id=t.id) }}">изменить</a>
-      <form method="post" action="{{ url_for('admin.delete_tariff', tariff_id=t.id) }}" style="display:inline" onsubmit="return confirm('Удалить {{ t.name }}?');">
-        <button class="btn danger" type="submit">удалить</button>
-      </form>
-    </td>
-  </tr>
-  {% endfor %}
-</table>
+<section class="section">
+  <div class="section-heading">
+    <h1>Товары</h1>
+    <a class="btn primary" href="{{ url_for('admin.new_tariff') }}">+ Новый товар</a>
+  </div>
+
+  {% if tariffs %}
+  <div class="card pad">
+    <table class="table">
+      <thead>
+        <tr><th>ID</th><th>Название</th><th>Цена</th><th>Тип</th><th>Категория</th><th></th></tr>
+      </thead>
+      <tbody>
+      {% for t in tariffs %}
+      <tr>
+        <td>{{ t.id }}</td>
+        <td>{{ t.name }}</td>
+        <td>{{ t.price }} ₽</td>
+        <td>{{ t.t_type }}</td>
+        <td>{{ t.category_name or '—' }}</td>
+        <td>
+          <a class="link" href="{{ url_for('admin.edit_tariff', tariff_id=t.id) }}">Изменить</a>
+          <form method="post" action="{{ url_for('admin.delete_tariff', tariff_id=t.id) }}" style="display:inline" onsubmit="return confirm('Удалить {{ t.name }}?');">
+            <button class="btn danger" type="submit">Удалить</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="card empty-state center">
+    <strong>Пока нет товаров</strong>
+    <span class="muted">Создайте первый товар, чтобы протестировать витрину и оформление заказа.</span>
+  </div>
+  {% endif %}
+</section>
 {% endblock %}

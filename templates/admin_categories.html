@@ -1,22 +1,46 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Категории</h1>
-<p><a class="btn primary" href="{{ url_for('admin.new_category') }}">+ Новая категория</a></p>
-<ul class="cat-tree">
-  {% for c in categories %}
-  <li>
-    <strong>{{ c.name }}</strong> — <a class="link" href="{{ url_for('admin.edit_category', cat_id=c.id) }}">редактировать</a>
-    {% if c.subcategories %}
-    <ul>
-      {% for s in c.subcategories %}
-      <li>{{ s.name }} — <a class="link" href="{{ url_for('admin.edit_category', cat_id=s.id) }}">редактировать</a></li>
+<section class="section">
+  <div class="section-heading">
+    <h1>Категории</h1>
+    <a class="btn primary" href="{{ url_for('admin.new_category') }}">+ Новая категория</a>
+  </div>
+
+  {% if categories %}
+  <div class="card pad">
+    <ul class="cat-tree">
+      {% for c in categories %}
+      <li>
+        <div class="product-meta">
+          <strong>{{ c.name }}</strong>
+          <a class="link" href="{{ url_for('admin.edit_category', cat_id=c.id) }}">Редактировать</a>
+        </div>
+        {% if c.description %}<p class="muted">{{ c.description }}</p>{% endif %}
+        {% if c.subcategories %}
+        <ul>
+          {% for s in c.subcategories %}
+          <li>
+            <div class="product-meta">
+              <span>{{ s.name }}</span>
+              <a class="link" href="{{ url_for('admin.edit_category', cat_id=s.id) }}">Редактировать</a>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </li>
       {% endfor %}
     </ul>
-    {% endif %}
-  </li>
-  {% endfor %}
-</ul>
-{% if uncategorized_count and uncategorized_count > 0 %}
-<p class="muted">Товаров без категории: {{ uncategorized_count }}</p>
-{% endif %}
+  </div>
+  {% else %}
+  <div class="card empty-state center">
+    <strong>Категории ещё не созданы</strong>
+    <span class="muted">Нажмите «Новая категория», чтобы создать первую структуру витрины.</span>
+  </div>
+  {% endif %}
+
+  {% if uncategorized_count and uncategorized_count > 0 %}
+  <p class="muted">Товаров без категории: {{ uncategorized_count }}</p>
+  {% endif %}
+</section>
 {% endblock %}

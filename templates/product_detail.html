@@ -1,34 +1,61 @@
 {% extends "base.html" %}
+{% block title %}{{ product.name }} — Hardcores Shop{% endblock %}
 {% block content %}
-<h1>{{ product.name }}</h1>
-<div class="product-detail">
-  <div class="product-desc">{{ product.description }}</div>
-  <div class="price large">Цена: {{ product.price }} ₽</div>
-  {% if product.t_type == 'channel' %}
-    <p class="muted">Доступ в приватный Telegram‑канал (после оплаты получите ссылку, вход одобряется автоматически).</p>
-  {% elif product.t_type == 'text' %}
-    <p class="muted">Текстовый цифровой товар: контент будет доступен сразу после оплаты.</p>
-  {% elif product.t_type == 'bundle' %}
-    <p class="muted">Набор нескольких товаров по выгодной цене.</p>
-  {% elif product.t_type == 'status' %}
-    <p class="muted">Специальный статус — инструкция и ссылка будут выданы после оплаты.</p>
-  {% endif %}
+<section class="section">
+  <div class="product-detail">
+    <div class="card detail-card">
+      <span class="tag">Цифровой товар</span>
+      <h1>{{ product.name }}</h1>
+      <div class="product-meta">
+        <span class="badge soft">Тип: {{ product.t_type or 'не задан' }}</span>
+        <span class="muted">ID #{{ product.id }}</span>
+      </div>
+      <div class="product-desc">{{ product.description or 'Описание появится позже — сейчас это заглушка, но сам товар можно оформить уже сейчас.' }}</div>
 
-  <form action="{{ url_for('main.add_to_cart') }}" method="post" class="buy-form">
-    <input type="hidden" name="tariff_id" value="{{ product.id }}"/>
-    {% set durations = durations or [] %}
-    {% if durations and durations|length > 0 %}
-    <label>Длительность:
-      <select name="duration">
-        {% for d in durations %}
-        <option value="{{ d.seconds }}" {% if d.is_default %}selected{% endif %}>
-          {{ d.name }} — {{ d.price }} ₽
-        </option>
-        {% endfor %}
-      </select>
-    </label>
-    {% endif %}
-    <button class="btn primary" type="submit">Добавить в корзину</button>
-  </form>
-</div>
+      <ul class="feature-list">
+        <li>Мгновенная выдача после оплаты через личный кабинет и Telegram.</li>
+        <li>Защищённый доступ — вы в любой момент сможете обновить ссылку или статус.</li>
+        <li>Поддержка в течение 24 часов: свяжитесь с нами, если что-то пойдёт не так.</li>
+      </ul>
+
+      {% if product.t_type == 'channel' %}
+        <p class="muted">После оплаты вы получите приватную ссылку на канал. Если автоматическая выдача недоступна, отобразим кнопку-заглушку и напомним связаться с администратором.</p>
+      {% elif product.t_type == 'text' %}
+        <p class="muted">Это текстовый цифровой продукт. Контент откроется мгновенно в личном кабинете, а пока не реализовано — покажем заглушку с инструкцией.</p>
+      {% elif product.t_type == 'bundle' %}
+        <p class="muted">Набор нескольких товаров по специальной цене. Если часть позиций ещё недоступна, в выдаче появятся подсказки и заглушки.</p>
+      {% elif product.t_type == 'status' %}
+        <p class="muted">Специальный статус или роль. После оплаты мы покажем код и инструкцию, либо временную заглушку с контактами.</p>
+      {% endif %}
+    </div>
+
+    <aside class="card detail-card buy-panel">
+      <div>
+        <div class="price large">{{ product.price }} ₽</div>
+        <p class="muted">Базовая стоимость. При наличии подписки можно выбрать другую длительность.</p>
+      </div>
+
+      <form action="{{ url_for('main.add_to_cart') }}" method="post" class="buy-form">
+        <input type="hidden" name="tariff_id" value="{{ product.id }}"/>
+        {% set durations = durations or [] %}
+        {% if durations and durations|length > 0 %}
+        <label>Длительность доступа
+          <select name="duration">
+            {% for d in durations %}
+            <option value="{{ d.seconds }}" {% if d.is_default %}selected{% endif %}>
+              {{ d.name }} — {{ d.price }} ₽
+            </option>
+            {% endfor %}
+          </select>
+        </label>
+        {% else %}
+        <div class="placeholder-note">Альтернативные длительности пока не настроены — используем стандартную цену.</div>
+        {% endif %}
+        <button class="btn primary" type="submit">Добавить в корзину</button>
+      </form>
+
+      <div class="secure-note">Оплата проходит в демо‑режиме. Если платёжные методы временно недоступны, мы покажем заглушку с QR или ссылкой и уведомим вас во всплывающем сообщении.</div>
+    </aside>
+  </div>
+</section>
 {% endblock %}

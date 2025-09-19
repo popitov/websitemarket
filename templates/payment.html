@@ -1,23 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Оплата</h1>
-{% if amount and amount > 0 %}
-<p>Сумма к оплате: <strong>{{ amount }} ₽</strong></p>
-{% endif %}
+<section class="section">
+  <div class="section-heading">
+    <h1>Оплата</h1>
+    <span class="tag">Подтверждение платежа</span>
+  </div>
 
-<div id="pay-block" class="card pad center">
-  <div id="qr-wrap">
-    <div id="qr-loading" class="spinner">Готовим QR…</div>
-    <img id="qr-img" src="" alt="QR" style="display:none; max-width:280px;"/>
-  </div>
-  <div id="fallback" style="display:none">
-    <p>Не удалось автоматически получить QR.</p>
-    {% if redirect_url %}
-      <a class="btn" href="{{ redirect_url }}" target="_blank">Открыть страницу оплаты</a>
+  <div class="card pad pay-card" id="pay-block">
+    {% if amount and amount > 0 %}
+    <div><strong>Сумма к оплате:</strong> {{ amount }} ₽</div>
     {% endif %}
+    <p class="muted">Мы формируем платёж. Если реальная интеграция ещё не подключена, показываем заглушку с QR или ссылкой — вы всё равно увидите, как будет выглядеть процесс.</p>
+
+    <div id="qr-wrap" class="center">
+      <div id="qr-loading" class="spinner">Готовим QR…</div>
+      <img id="qr-img" src="" alt="QR" style="display:none; max-width:280px;"/>
+    </div>
+
+    <div id="fallback" class="center" style="display:none">
+      <p>Не удалось автоматически получить QR. Это заглушка: откройте ссылку вручную.</p>
+      {% if redirect_url %}
+        <a class="btn" href="{{ redirect_url }}" target="_blank">Открыть страницу оплаты</a>
+      {% endif %}
+    </div>
+
+    <div id="status" class="status-indicator">Ожидаем подтверждение оплаты…</div>
   </div>
-  <div id="status" class="muted">Ожидаем подтверждение оплаты…</div>
-</div>
+</section>
 
 <script>
 const pid = "{{ payment_id }}";

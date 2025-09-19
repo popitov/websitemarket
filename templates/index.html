@@ -1,38 +1,77 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Категории</h1>
-<div class="grid categories">
-  {% for cat in categories %}
-  <a class="card hover" href="{{ url_for('main.category', cat_id=cat.id) }}">
-    <div class="card-body">
-      <div class="card-title">{{ cat.name }}</div>
-      <div class="card-text">{{ cat.description }}</div>
-    </div>
-  </a>
-  {% endfor %}
-  {% if products %}
-  <a class="card hover" href="{{ url_for('main.category', cat_id=0) }}">
-    <div class="card-body">
-      <div class="card-title">Без категории</div>
-      <div class="card-text">Все товары вне категорий</div>
-    </div>
-  </a>
-  {% endif %}
-</div>
-
-{% if products %}
-<h2>Товары</h2>
-<div class="grid products">
-  {% for p in products %}
-  <div class="card product hover">
-    <div class="card-body">
-      <div class="card-title"><a href="{{ url_for('main.product_detail', tariff_id=p.id) }}">{{ p.name }}</a></div>
-      <div class="card-text">{{ p.description[:120] }}{% if p.description|length > 120 %}…{% endif %}</div>
-      <div class="price">{{ p.price }} ₽</div>
-      <a class="btn" href="{{ url_for('main.product_detail', tariff_id=p.id) }}">Открыть</a>
-    </div>
+<section class="hero">
+  <span class="eyebrow">MVP витрина</span>
+  <h1>Цифровые продукты, доступы и подписки в одном месте</h1>
+  <p>Это минимально жизнеспособная версия Hardcores Shop: добавляйте товары, объединяйте их по категориям, принимайте оплату и автоматически выдавайте доступ. Если чего-то ещё нет — честно покажем заглушку.</p>
+  <div class="actions">
+    <a class="btn primary" href="{{ url_for('main.view_cart') }}">Перейти в корзину</a>
+    <a class="btn" href="{{ url_for('main.account') }}">Проверить мои покупки</a>
   </div>
-  {% endfor %}
-</div>
-{% endif %}
+</section>
+
+<section class="section">
+  <div class="section-heading">
+    <h2>Категории</h2>
+    <span class="tag">Подборки товаров</span>
+  </div>
+  {% if categories %}
+  <div class="grid categories">
+    {% for cat in categories %}
+    <a class="card hover" href="{{ url_for('main.category', cat_id=cat.id) }}">
+      <div class="card-body product-card">
+        <div class="card-title">{{ cat.name }}</div>
+        <div class="card-text">{{ cat.description or 'Описание появится позже — сейчас это заглушка.' }}</div>
+      </div>
+    </a>
+    {% endfor %}
+    {% if products %}
+    <a class="card hover" href="{{ url_for('main.category', cat_id=0) }}">
+      <div class="card-body product-card">
+        <div class="card-title">Без категории</div>
+        <div class="card-text">Все товары вне категорий, упорядочим их позже.</div>
+      </div>
+    </a>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="card empty-state center">
+    <strong>Категории пока не созданы</strong>
+    <span class="muted">Добавьте хотя бы одну категорию в админке, чтобы разбить ассортимент на разделы.</span>
+    <a class="btn" href="{{ url_for('admin.categories') }}">Перейти в админку</a>
+  </div>
+  {% endif %}
+</section>
+
+<section class="section">
+  <div class="section-heading">
+    <h2>Товары</h2>
+    <span class="tag">Готовы к продаже</span>
+  </div>
+  {% if products %}
+  <div class="grid products">
+    {% for p in products %}
+    <div class="card hover product-card">
+      <div class="card-body">
+        <div class="product-meta">
+          <div class="card-title"><a href="{{ url_for('main.product_detail', tariff_id=p.id) }}">{{ p.name }}</a></div>
+          <span class="badge">{{ p.price }} ₽</span>
+        </div>
+        <div class="card-text">{{ p.description[:140] }}{% if p.description|length > 140 %}…{% elif not p.description %}Описание обновится позже — сейчас это заглушка.{% endif %}</div>
+        <div class="product-meta">
+          <span class="muted">Тип: {{ p.t_type or 'не задан' }}</span>
+          <a class="btn" href="{{ url_for('main.product_detail', tariff_id=p.id) }}">Подробнее</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card empty-state center">
+    <strong>Витрина пока пустая</strong>
+    <span class="muted">Создайте первый товар — он сразу появится в списке и будет доступен для покупки.</span>
+    <a class="btn" href="{{ url_for('admin.tariffs') }}">Добавить товар</a>
+  </div>
+  {% endif %}
+</section>
 {% endblock %}

@@ -1,31 +1,57 @@
 {% extends "base.html" %}
+{% block title %}{{ category.name }} — Hardcores Shop{% endblock %}
 {% block content %}
-<h1>{{ category.name }}</h1>
-{% if category.description %}<p class="muted">{{ category.description }}</p>{% endif %}
-
-{% if subcategories %}
-<h3>Подкатегории</h3>
-<ul class="inline-list">
-  {% for s in subcategories %}
-  <li><a href="{{ url_for('main.category', cat_id=s.id) }}">{{ s.name }}</a></li>
-  {% endfor %}
-</ul>
-{% endif %}
-
-{% if products %}
-<div class="grid products">
-  {% for p in products %}
-  <div class="card product hover">
-    <div class="card-body">
-      <div class="card-title"><a href="{{ url_for('main.product_detail', tariff_id=p.id) }}">{{ p.name }}</a></div>
-      <div class="card-text">{{ p.description[:140] }}{% if p.description|length > 140 %}…{% endif %}</div>
-      <div class="price">{{ p.price }} ₽</div>
-      <a class="btn" href="{{ url_for('main.product_detail', tariff_id=p.id) }}">Смотреть</a>
+<section class="section">
+  <div class="section-heading">
+    <div>
+      <h1>{{ category.name }}</h1>
+      <p class="muted">{{ category.description or 'Описание раздела в разработке — пока показываем заглушку.' }}</p>
     </div>
+    <span class="tag">Категория</span>
   </div>
-  {% endfor %}
-</div>
-{% else %}
-<p>Пока пусто.</p>
-{% endif %}
+
+  {% if subcategories %}
+  <div class="card pad">
+    <h3>Подкатегории</h3>
+    <ul class="inline-list">
+      {% for s in subcategories %}
+      <li><a class="btn" href="{{ url_for('main.category', cat_id=s.id) }}">{{ s.name }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</section>
+
+<section class="section">
+  <div class="section-heading">
+    <h2>Товары раздела</h2>
+    <span class="tag">{{ products|length if products else 0 }} позиций</span>
+  </div>
+
+  {% if products %}
+  <div class="grid products">
+    {% for p in products %}
+    <div class="card hover product-card">
+      <div class="card-body">
+        <div class="product-meta">
+          <div class="card-title"><a href="{{ url_for('main.product_detail', tariff_id=p.id) }}">{{ p.name }}</a></div>
+          <span class="badge">{{ p.price }} ₽</span>
+        </div>
+        <div class="card-text">{{ p.description[:160] }}{% if p.description|length > 160 %}…{% elif not p.description %}Описание в пути — пока отображаем заглушку.{% endif %}</div>
+        <div class="product-meta">
+          <span class="muted">Тип: {{ p.t_type or 'не задан' }}</span>
+          <a class="btn" href="{{ url_for('main.product_detail', tariff_id=p.id) }}">Подробнее</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card empty-state center">
+    <strong>В категории пока нет товаров</strong>
+    <span class="muted">Добавьте позиции через админ‑панель — они появятся здесь автоматически.</span>
+    <a class="btn" href="{{ url_for('admin.tariffs') }}">Перейти к товарам</a>
+  </div>
+  {% endif %}
+</section>
 {% endblock %}

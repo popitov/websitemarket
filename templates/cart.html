@@ -1,51 +1,79 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Корзина</h1>
+<section class="section">
+  <div class="section-heading">
+    <h1>Корзина</h1>
+    <span class="tag">Оформление заказа</span>
+  </div>
 
-{% if items %}
-<table class="table">
-  <tr><th>Товар</th><th>Цена</th><th>Кол-во</th><th>Сумма</th><th></th></tr>
-  {% for it in items %}
-  <tr>
-    <td>{{ it.name }}{% if it.duration_name %} <span class="muted">({{ it.duration_name }})</span>{% endif %}</td>
-    <td>{{ it.price }} ₽</td>
-    <td>{{ it.quantity }}</td>
-    <td>{{ it.subtotal }} ₽</td>
-    <td><a class="link" href="{{ url_for('main.remove_from_cart', tariff_id=it.tariff_id) }}">Удалить</a></td>
-  </tr>
-  {% endfor %}
-  <tr class="total">
-    <td colspan="3" class="right">Итого:</td>
-    <td><strong>{{ total }} ₽</strong></td>
-    <td></td>
-  </tr>
-  {% if promo %}
-  <tr>
-    <td colspan="3" class="right">Промокод {{ promo.code }}:</td>
-    <td>− {{ discount }} ₽</td><td></td>
-  </tr>
-  <tr class="total">
-    <td colspan="3" class="right">К оплате:</td>
-    <td><strong>{{ total_after }} ₽</strong></td>
-    <td></td>
-  </tr>
-  {% endif %}
-</table>
-
-<div class="grid two">
-  <form action="{{ url_for('main.apply_promo') }}" method="post" class="card pad">
-    <label>Промокод</label>
-    <div class="row">
-      <input type="text" name="promo_code" placeholder="Введите код" value="{{ promo.code if promo else '' }}"/>
-      <button class="btn" type="submit">{{ promo and 'Удалить' or 'Применить' }}</button>
+  {% if items %}
+  <div class="cart-layout">
+    <div class="card pad">
+      <table class="table">
+        <thead>
+          <tr><th>Товар</th><th>Цена</th><th>Кол-во</th><th>Сумма</th><th></th></tr>
+        </thead>
+        <tbody>
+        {% for it in items %}
+        <tr>
+          <td>{{ it.name }}{% if it.duration_name %} <span class="muted">({{ it.duration_name }})</span>{% endif %}</td>
+          <td>{{ it.price }} ₽</td>
+          <td>{{ it.quantity }}</td>
+          <td>{{ it.subtotal }} ₽</td>
+          <td><a class="link" href="{{ url_for('main.remove_from_cart', tariff_id=it.tariff_id) }}">Удалить</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr class="total">
+            <td colspan="3" class="right">Итого:</td>
+            <td><strong>{{ total }} ₽</strong></td>
+            <td></td>
+          </tr>
+          {% if promo %}
+          <tr>
+            <td colspan="3" class="right">Промокод {{ promo.code }}:</td>
+            <td>− {{ discount }} ₽</td><td></td>
+          </tr>
+          <tr class="total">
+            <td colspan="3" class="right">К оплате:</td>
+            <td><strong>{{ total_after }} ₽</strong></td>
+            <td></td>
+          </tr>
+          {% endif %}
+        </tfoot>
+      </table>
     </div>
-  </form>
 
-  <form action="{{ url_for('main.checkout') }}" method="post" class="card pad right">
-    <button class="btn primary" type="submit">Перейти к оплате</button>
-  </form>
-</div>
-{% else %}
-<p>Корзина пуста.</p>
-{% endif %}
+    <div class="cart-summary card pad">
+      <h2>Что дальше</h2>
+      <p class="muted">После подтверждения заказа мы сформируем платёж. Если платёжный шлюз пока не подключён, покажем QR-заглушку или ссылку с инструкцией.</p>
+      <div class="placeholder-note">Проверяйте состав корзины перед оплатой — возвраты для MVP доступны только вручную.</div>
+    </div>
+  </div>
+
+  <div class="cart-actions">
+    <form action="{{ url_for('main.apply_promo') }}" method="post" class="card pad">
+      <h3>Промокод</h3>
+      <p class="muted">Введите промокод, если он у вас есть. Не активирован? Оставим поле пустым.</p>
+      <div class="row">
+        <input type="text" name="promo_code" placeholder="Введите код" value="{{ promo.code if promo else '' }}"/>
+        <button class="btn" type="submit">{{ promo and 'Удалить' or 'Применить' }}</button>
+      </div>
+    </form>
+
+    <form action="{{ url_for('main.checkout') }}" method="post" class="card pad">
+      <h3>Оплата</h3>
+      <p class="muted">Нажмите кнопку, чтобы перейти к оплате. Если оплата временно недоступна, увидите уведомление и заглушку с дальнейшими шагами.</p>
+      <button class="btn primary" type="submit">Перейти к оплате</button>
+    </form>
+  </div>
+  {% else %}
+  <div class="card empty-state center">
+    <strong>Корзина пока пуста</strong>
+    <span class="muted">Добавьте товары из каталога — они появятся здесь, и вы сможете протестировать оформление.</span>
+    <a class="btn primary" href="{{ url_for('main.index') }}">Вернуться в каталог</a>
+  </div>
+  {% endif %}
+</section>
 {% endblock %}

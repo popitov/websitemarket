@@ -1,62 +1,104 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Мой доступ</h1>
+<section class="section">
+  <div class="section-heading">
+    <h1>Мой доступ</h1>
+    <span class="tag">Личный кабинет</span>
+  </div>
+  <div class="card pad">
+    <p>Здесь собраны все цифровые покупки Hardcores Shop. Если доступ ещё не выдан, показываем честную заглушку и сообщаем, что будет дальше.</p>
+    <div class="placeholder-note">Авторизуйтесь через Telegram, чтобы синхронизировать покупки между устройствами. Без авторизации данные сохраняются локально и могут быть очищены.</div>
+  </div>
+</section>
 
 {% if purchases and purchases|length > 0 %}
-<h3>Покупки, привязанные к Telegram</h3>
-<table class="table">
-  <tr><th>Товар</th><th>Доступ / Контент</th><th>Статус</th><th></th></tr>
-  {% for p in purchases %}
-  <tr>
-    <td><strong>{{ p.tariff_name }}</strong> <span class="muted">({{ p.t_type }})</span></td>
-    <td>
-      {% if p.t_type == 'text' %}
-        <div class="text-box">{{ p.link }}</div>
-      {% elif p.t_type == 'channel' %}
-        {% if p.link %}<a class="btn" href="{{ p.link }}" target="_blank">Вступить в канал</a>{% else %}<span class="muted">Ссылка недоступна</span>{% endif %}
-      {% elif p.t_type == 'status' %}
-        <code>{{ p.link }}</code>
-      {% else %}
-        {% if p.link %}<a href="{{ p.link }}" target="_blank">Ссылка</a>{% endif %}
-      {% endif %}
-    </td>
-    <td>
-      {% if p.ttl_seconds and p.ttl_seconds > 0 %}
-        {% if p.expires_at_h %}Действует до {{ p.expires_at_h }}{% else %}Осталось {{ p.ttl_seconds }} сек.{% endif %}
-      {% else %}
-        Бессрочно / без таймера
-      {% endif %}
-    </td>
-    <td>
-      {% if p.t_type == 'channel' %}
-      <a class="link" href="{{ url_for('main.refresh_access', purchase_id=p.id) }}">Обновить ссылку</a>
-      {% endif %}
-    </td>
-  </tr>
-  {% endfor %}
-</table>
+<section class="section">
+  <div class="section-heading">
+    <h2>Покупки, привязанные к Telegram</h2>
+    <span class="tag">{{ purchases|length }} активных</span>
+  </div>
+  <div class="card pad">
+    <table class="table">
+      <thead>
+        <tr><th>Товар</th><th>Доступ / Контент</th><th>Статус</th><th></th></tr>
+      </thead>
+      <tbody>
+      {% for p in purchases %}
+      <tr>
+        <td><strong>{{ p.tariff_name }}</strong> <span class="muted">({{ p.t_type }})</span></td>
+        <td>
+          {% if p.t_type == 'text' %}
+            <div class="text-box">{{ p.link or 'Контент появится здесь сразу после активации. Пока это заглушка.' }}</div>
+          {% elif p.t_type == 'channel' %}
+            {% if p.link %}
+              <a class="btn" href="{{ p.link }}" target="_blank">Вступить в канал</a>
+            {% else %}
+              <span class="muted">Ссылка ещё генерируется — мы отправим уведомление как только она появится.</span>
+            {% endif %}
+          {% elif p.t_type == 'status' %}
+            <code>{{ p.link or 'Код придёт позже' }}</code>
+          {% else %}
+            {% if p.link %}
+              <a class="link" href="{{ p.link }}" target="_blank">Открыть доступ</a>
+            {% else %}
+              <span class="muted">Материалы готовятся, временная заглушка.</span>
+            {% endif %}
+          {% endif %}
+        </td>
+        <td>
+          {% if p.ttl_seconds and p.ttl_seconds > 0 %}
+            {% if p.expires_at_h %}Действует до {{ p.expires_at_h }}{% else %}Осталось {{ p.ttl_seconds }} сек.{% endif %}
+          {% else %}
+            Бессрочно / без таймера
+          {% endif %}
+        </td>
+        <td>
+          {% if p.t_type == 'channel' %}
+          <a class="link" href="{{ url_for('main.refresh_access', purchase_id=p.id) }}">Обновить ссылку</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
 {% endif %}
 
 {% set guest = guest_purchases or [] %}
 {% if guest and guest|length > 0 %}
-<h3>Покупки на этом устройстве (без Telegram)</h3>
-<ul class="guest-list">
-  {% for g in guest %}
-  <li>
-    <strong>{{ g.name }}</strong> — 
-    {% if g.type == 'text' %}
-      <span class="muted">текст:</span> <span class="text-inline">{{ g.content }}</span>
-    {% elif g.type == 'status' %}
-      <span class="muted">код/ссылка:</span> <code>{{ g.link }}</code>
-    {% else %}
-      <span class="muted">тип:</span> {{ g.type }}
-    {% endif %}
-  </li>
-  {% endfor %}
-</ul>
+<section class="section">
+  <div class="section-heading">
+    <h2>Покупки на этом устройстве</h2>
+    <span class="tag">Без авторизации</span>
+  </div>
+  <ul class="guest-list">
+    {% for g in guest %}
+    <li>
+      <strong>{{ g.name }}</strong>
+      {% if g.type == 'text' %}
+        <div><span class="muted">Текст:</span> <span class="text-inline">{{ g.content or 'Контент появится после оплаты.' }}</span></div>
+      {% elif g.type == 'status' %}
+        <div><span class="muted">Код / ссылка:</span> <code>{{ g.link or 'Будет выдано вручную' }}</code></div>
+      {% else %}
+        <div><span class="muted">Тип:</span> {{ g.type }}</div>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</section>
 {% endif %}
 
 {% if (not purchases or purchases|length == 0) and (not guest or guest|length == 0) %}
-<p>Пока нет покупок.</p>
+<section class="section">
+  <div class="card empty-state center">
+    <strong>Пока нет покупок</strong>
+    <span class="muted">Добавьте товар в корзину и оплатите его — доступ появится здесь автоматически. Если функция ещё не готова, увидите понятную заглушку.</span>
+    <div class="actions">
+      <a class="btn primary" href="{{ url_for('main.index') }}">Перейти к каталогу</a>
+      <a class="btn" href="{{ url_for('main.view_cart') }}">Открыть корзину</a>
+    </div>
+  </div>
+</section>
 {% endif %}
 {% endblock %}
