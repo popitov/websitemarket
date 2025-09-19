@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Категории</h1>
+<div class="grid categories">
+  {% for cat in categories %}
+  <a class="card hover" href="{{ url_for('main.category', cat_id=cat.id) }}">
+    <div class="card-body">
+      <div class="card-title">{{ cat.name }}</div>
+      <div class="card-text">{{ cat.description }}</div>
+    </div>
+  </a>
+  {% endfor %}
+  {% if products %}
+  <a class="card hover" href="{{ url_for('main.category', cat_id=0) }}">
+    <div class="card-body">
+      <div class="card-title">Без категории</div>
+      <div class="card-text">Все товары вне категорий</div>
+    </div>
+  </a>
+  {% endif %}
+</div>
+
+{% if products %}
+<h2>Товары</h2>
+<div class="grid products">
+  {% for p in products %}
+  <div class="card product hover">
+    <div class="card-body">
+      <div class="card-title"><a href="{{ url_for('main.product_detail', tariff_id=p.id) }}">{{ p.name }}</a></div>
+      <div class="card-text">{{ p.description[:120] }}{% if p.description|length > 120 %}…{% endif %}</div>
+      <div class="price">{{ p.price }} ₽</div>
+      <a class="btn" href="{{ url_for('main.product_detail', tariff_id=p.id) }}">Открыть</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ product.name }}</h1>
+<div class="product-detail">
+  <div class="product-desc">{{ product.description }}</div>
+  <div class="price large">Цена: {{ product.price }} ₽</div>
+  {% if product.t_type == 'channel' %}
+    <p class="muted">Доступ в приватный Telegram‑канал (после оплаты получите ссылку, вход одобряется автоматически).</p>
+  {% elif product.t_type == 'text' %}
+    <p class="muted">Текстовый цифровой товар: контент будет доступен сразу после оплаты.</p>
+  {% elif product.t_type == 'bundle' %}
+    <p class="muted">Набор нескольких товаров по выгодной цене.</p>
+  {% elif product.t_type == 'status' %}
+    <p class="muted">Специальный статус — инструкция и ссылка будут выданы после оплаты.</p>
+  {% endif %}
+
+  <form action="{{ url_for('main.add_to_cart') }}" method="post" class="buy-form">
+    <input type="hidden" name="tariff_id" value="{{ product.id }}"/>
+    {% set durations = durations or [] %}
+    {% if durations and durations|length > 0 %}
+    <label>Длительность:
+      <select name="duration">
+        {% for d in durations %}
+        <option value="{{ d.seconds }}" {% if d.is_default %}selected{% endif %}>
+          {{ d.name }} — {{ d.price }} ₽
+        </option>
+        {% endfor %}
+      </select>
+    </label>
+    {% endif %}
+    <button class="btn primary" type="submit">Добавить в корзину</button>
+  </form>
+</div>
+{% endblock %}

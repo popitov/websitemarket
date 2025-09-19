@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Товары</h1>
+<p><a class="btn primary" href="{{ url_for('admin.new_tariff') }}">+ Новый товар</a></p>
+<table class="table">
+  <tr><th>ID</th><th>Название</th><th>Цена</th><th>Тип</th><th>Категория</th><th></th></tr>
+  {% for t in tariffs %}
+  <tr>
+    <td>{{ t.id }}</td>
+    <td>{{ t.name }}</td>
+    <td>{{ t.price }} ₽</td>
+    <td>{{ t.t_type }}</td>
+    <td>{{ t.category_name or '—' }}</td>
+    <td>
+      <a class="link" href="{{ url_for('admin.edit_tariff', tariff_id=t.id) }}">изменить</a>
+      <form method="post" action="{{ url_for('admin.delete_tariff', tariff_id=t.id) }}" style="display:inline" onsubmit="return confirm('Удалить {{ t.name }}?');">
+        <button class="btn danger" type="submit">удалить</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

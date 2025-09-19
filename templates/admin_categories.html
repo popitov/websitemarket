@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Категории</h1>
+<p><a class="btn primary" href="{{ url_for('admin.new_category') }}">+ Новая категория</a></p>
+<ul class="cat-tree">
+  {% for c in categories %}
+  <li>
+    <strong>{{ c.name }}</strong> — <a class="link" href="{{ url_for('admin.edit_category', cat_id=c.id) }}">редактировать</a>
+    {% if c.subcategories %}
+    <ul>
+      {% for s in c.subcategories %}
+      <li>{{ s.name }} — <a class="link" href="{{ url_for('admin.edit_category', cat_id=s.id) }}">редактировать</a></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% if uncategorized_count and uncategorized_count > 0 %}
+<p class="muted">Товаров без категории: {{ uncategorized_count }}</p>
+{% endif %}
+{% endblock %}
