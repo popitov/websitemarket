@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Корзина — Hardcores Shop</title>
+  <meta name="description" content="Пример страницы корзины для статической витрины Hardcores Shop.">
+  <meta name="theme-color" content="#04050b" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <div class="container nav">
+      <div class="brand">
+        <a href="index.html">
+          <span aria-hidden="true">🏪</span>
+          <span>Hardcores Shop</span>
+        </a>
+      </div>
+      <nav class="nav-links">
+        <a href="index.html">Каталог</a>
+        <a href="cart.html">Корзина <span class="badge" id="cart-count">2</span></a>
+        <a href="account.html">Мой доступ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <section class="section">
+        <div class="section-heading">
+          <h1>Корзина</h1>
+          <span class="tag">Оформление заказа</span>
+        </div>
+
+        <div class="cart-layout">
+          <div class="card pad">
+            <table class="table">
+              <thead>
+                <tr><th>Товар</th><th>Цена</th><th>Кол-во</th><th>Сумма</th><th></th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Доступ в закрытый канал Hardcores <span class="muted">(12 месяцев)</span></td>
+                  <td>2 490 ₽</td>
+                  <td>1</td>
+                  <td>2 490 ₽</td>
+                  <td><a class="link" href="#">Удалить</a></td>
+                </tr>
+                <tr>
+                  <td>Интенсив «Маркетинг без воды»</td>
+                  <td>1 290 ₽</td>
+                  <td>1</td>
+                  <td>1 290 ₽</td>
+                  <td><a class="link" href="#">Удалить</a></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr class="total">
+                  <td colspan="3" class="right">Итого:</td>
+                  <td><strong>3 780 ₽</strong></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td colspan="3" class="right">Промокод MVP:</td>
+                  <td>− 380 ₽</td>
+                  <td></td>
+                </tr>
+                <tr class="total">
+                  <td colspan="3" class="right">К оплате:</td>
+                  <td><strong>3 400 ₽</strong></td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <div class="cart-summary card pad">
+            <h2>Что дальше</h2>
+            <p class="muted">После подтверждения заказа сформируем платёж. Если платёжный шлюз ещё не подключён, честно покажем QR-заглушку или ссылку с инструкцией.</p>
+            <div class="placeholder-note">Проверяйте состав корзины перед оплатой — возвраты в MVP доступны только вручную.</div>
+          </div>
+        </div>
+
+        <div class="cart-actions">
+          <form class="card pad">
+            <h3>Промокод</h3>
+            <p class="muted">Введите промокод, если он у вас есть. Не активирован? Оставим поле пустым.</p>
+            <div class="row">
+              <input type="text" name="promo_code" placeholder="Введите код" value="MVP" />
+              <button class="btn" type="button">Удалить</button>
+            </div>
+          </form>
+
+          <form class="card pad">
+            <h3>Оплата</h3>
+            <p class="muted">Нажмите кнопку, чтобы перейти к оплате. Если оплата временно недоступна, увидите уведомление и заглушку с дальнейшими шагами.</p>
+            <button class="btn primary" type="button" onclick="location.href='payment.html'">Перейти к оплате</button>
+          </form>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div>Hardcores Shop — MVP витрина цифровых продуктов. Оплата и выдача доступа работают в демо‑режиме.</div>
+      <div class="muted">Если часть функциональности ещё не готова, мы покажем заглушку и уведомим вас внутри интерфейса.</div>
+    </div>
+  </footer>
+</div>
+
+<script src="static/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Мой доступ — Hardcores Shop</title>
+  <meta name="description" content="Пример личного кабинета для статической витрины Hardcores Shop.">
+  <meta name="theme-color" content="#04050b" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <div class="container nav">
+      <div class="brand">
+        <a href="index.html">
+          <span aria-hidden="true">🏪</span>
+          <span>Hardcores Shop</span>
+        </a>
+      </div>
+      <nav class="nav-links">
+        <a href="index.html">Каталог</a>
+        <a href="cart.html">Корзина <span class="badge" id="cart-count">2</span></a>
+        <a href="account.html">Мой доступ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <section class="section">
+        <div class="section-heading">
+          <h1>Мой доступ</h1>
+          <span class="tag">Личный кабинет</span>
+        </div>
+        <div class="card pad">
+          <p>Здесь собраны все цифровые покупки Hardcores Shop. Если доступ ещё не выдан, показываем честную заглушку и рассказываем, что будет дальше.</p>
+          <div class="placeholder-note">Авторизуйтесь через Telegram, чтобы синхронизировать покупки между устройствами. Без авторизации данные сохраняются локально и могут быть очищены.</div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <h2>Покупки, привязанные к Telegram</h2>
+          <span class="tag">2 активных</span>
+        </div>
+        <div class="card pad">
+          <table class="table">
+            <thead>
+              <tr><th>Товар</th><th>Доступ / Контент</th><th>Статус</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Доступ в закрытый канал Hardcores</strong> <span class="muted">(channel)</span></td>
+                <td><a class="btn" href="#" target="_blank">Вступить в канал</a></td>
+                <td>Действует до 12.09.2024</td>
+                <td><a class="link" href="#">Обновить ссылку</a></td>
+              </tr>
+              <tr>
+                <td><strong>Интенсив «Маркетинг без воды»</strong> <span class="muted">(text)</span></td>
+                <td><div class="text-box">Материалы доступны сразу после оплаты. Если контент обновляется, покажем статус.</div></td>
+                <td>Бессрочно / без таймера</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <h2>Покупки на этом устройстве</h2>
+          <span class="tag">Без авторизации</span>
+        </div>
+        <ul class="guest-list">
+          <li>
+            <strong>Пакет «Старт для команды»</strong>
+            <div><span class="muted">Тип:</span> bundle</div>
+          </li>
+          <li>
+            <strong>Доступ «Beta‑класс»</strong>
+            <div><span class="muted">Код / ссылка:</span> <code>HCS-BETA-2024</code></div>
+          </li>
+        </ul>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div>Hardcores Shop — MVP витрина цифровых продуктов. Оплата и выдача доступа работают в демо‑режиме.</div>
+      <div class="muted">Если часть функциональности ещё не готова, мы покажем заглушку и уведомим вас внутри интерфейса.</div>
+    </div>
+  </footer>
+</div>
+
+<script src="static/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hardcores Shop — цифровая витрина</title>
+  <meta name="description" content="MVP витрина Hardcores Shop: цифровые товары, доступы и подписки с быстрой оплатой.">
+  <meta name="theme-color" content="#04050b" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <div class="container nav">
+      <div class="brand">
+        <a href="index.html">
+          <span aria-hidden="true">🏪</span>
+          <span>Hardcores Shop</span>
+        </a>
+      </div>
+      <nav class="nav-links">
+        <a href="index.html">Каталог</a>
+        <a href="cart.html">Корзина <span class="badge" id="cart-count">2</span></a>
+        <a href="account.html">Мой доступ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <section class="hero">
+        <span class="eyebrow">MVP витрина</span>
+        <h1>Цифровые продукты, доступы и подписки в одном месте</h1>
+        <p>Это минимально жизнеспособная версия Hardcores Shop: добавляйте товары, объединяйте их по категориям, принимайте оплату и автоматически выдавайте доступ. Если чего-то ещё нет — честно покажем заглушку.</p>
+        <div class="actions">
+          <a class="btn primary" href="cart.html">Перейти в корзину</a>
+          <a class="btn" href="account.html">Проверить мои покупки</a>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <h2>Категории</h2>
+          <span class="tag">Подборки товаров</span>
+        </div>
+        <div class="grid categories">
+          <a class="card hover" href="category.html">
+            <div class="card-body product-card">
+              <div class="card-title">Доступы в каналы</div>
+              <div class="card-text">Приватные Telegram‑каналы и комьюнити со специализацией по маркетингу, дизайну и продукту.</div>
+            </div>
+          </a>
+          <a class="card hover" href="category.html">
+            <div class="card-body product-card">
+              <div class="card-title">Онлайн‑курсы</div>
+              <div class="card-text">Запуски с живыми созвонами и пре‑записанные интенсивы. Пока описаний нет — показываем честную заглушку.</div>
+            </div>
+          </a>
+          <a class="card hover" href="category.html">
+            <div class="card-body product-card">
+              <div class="card-title">Подписки</div>
+              <div class="card-text">Регулярные платежи с гибкими длительностями и автоматической выдачей контента после оплаты.</div>
+            </div>
+          </a>
+          <a class="card hover" href="category.html">
+            <div class="card-body product-card">
+              <div class="card-title">Без категории</div>
+              <div class="card-text">Все товары вне категорий — добавим структуру позже, пока тестируем MVP.</div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <h2>Товары</h2>
+          <span class="tag">Готовы к продаже</span>
+        </div>
+        <div class="grid products">
+          <div class="card hover product-card">
+            <div class="card-body">
+              <div class="product-meta">
+                <div class="card-title"><a href="product.html">Доступ в закрытый канал Hardcores</a></div>
+                <span class="badge">2 490 ₽</span>
+              </div>
+              <div class="card-text">Годовая подписка с честным онбордингом: встречаем, выдаём инструкции и подсказываем, что делать дальше.</div>
+              <div class="product-meta">
+                <span class="muted">Тип: channel</span>
+                <a class="btn" href="product.html">Подробнее</a>
+              </div>
+            </div>
+          </div>
+          <div class="card hover product-card">
+            <div class="card-body">
+              <div class="product-meta">
+                <div class="card-title"><a href="product.html">Интенсив «Маркетинг без воды»</a></div>
+                <span class="badge">1 290 ₽</span>
+              </div>
+              <div class="card-text">Серия уроков с практическими заданиями. Если часть контента в работе, отобразим заглушки и статус.</div>
+              <div class="product-meta">
+                <span class="muted">Тип: text</span>
+                <a class="btn" href="product.html">Подробнее</a>
+              </div>
+            </div>
+          </div>
+          <div class="card hover product-card">
+            <div class="card-body">
+              <div class="product-meta">
+                <div class="card-title"><a href="product.html">Пакет «Старт для команды»</a></div>
+                <span class="badge">4 990 ₽</span>
+              </div>
+              <div class="card-text">Комбинация из нескольких продуктов: канал, набор гайдов и созвоны. Часть можно включать постепенно.</div>
+              <div class="product-meta">
+                <span class="muted">Тип: bundle</span>
+                <a class="btn" href="product.html">Подробнее</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div>Hardcores Shop — MVP витрина цифровых продуктов. Оплата и выдача доступа работают в демо‑режиме.</div>
+      <div class="muted">Если часть функциональности ещё не готова, мы покажем заглушку и уведомим вас внутри интерфейса.</div>
+    </div>
+  </footer>
+</div>
+
+<script src="static/js/main.js"></script>
+</body>
+</html>
