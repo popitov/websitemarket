@@ -64,7 +64,15 @@
 
     <form action="{{ url_for('main.checkout') }}" method="post" class="card pad">
       <h3>Оплата</h3>
-      <p class="muted">Нажмите кнопку, чтобы перейти к оплате. Если оплата временно недоступна, увидите уведомление и заглушку с дальнейшими шагами.</p>
+      <p class="muted">Выберите способ оплаты и нажмите кнопку. Оплату можно провести через СБП (Platega) или CryptoBot.</p>
+      <label class="radio">
+        <input type="radio" name="method" value="sbp" checked>
+        <span>Оплатить через СБП (Platega)</span>
+      </label>
+      <label class="radio">
+        <input type="radio" name="method" value="crypto">
+        <span>Оплатить через CryptoBot</span>
+      </label>
       <button class="btn primary" type="submit">Перейти к оплате</button>
     </form>
   </div>

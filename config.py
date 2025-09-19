@@ -10,10 +10,14 @@ SHOP_DB = os.getenv("SHOP_DB", "shop.db")
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 
 # Платёжка Platega (тестовые/боевые параметры)
-PLATEGA_MERCHANT_ID = os.getenv("PLATEGA_MERCHANT_ID", "TEST_MERCHANT_ID")
-PLATEGA_API_KEY = os.getenv("PLATEGA_API_KEY", "TEST_SECRET_KEY")
+PLATEGA_MERCHANT_ID = os.getenv("PLATEGA_MERCHANT_ID", "e5ea5510-4b78-49b0-a2e5-3730e7c15117")
+PLATEGA_API_KEY = os.getenv("PLATEGA_API_KEY", "79JnwAoUGQtSrVlvia2QIgiKobsTN87MvshmuHjCxXh8c4Y8ogkBKB7hfhcnQ1q9qyjADEZPRm1rpPEfOm5wmDTAzqPoAFPT5ons")
 PLATEGA_CREATE_URL = os.getenv("PLATEGA_CREATE_URL", "https://app.platega.io/transaction/process")
 PLATEGA_STATUS_URL = os.getenv("PLATEGA_STATUS_URL", "https://app.platega.io/transaction/{payment_id}")
+
+# CryptoBot (Crypto Pay API)
+CRYPTO_PAY_TOKEN = os.getenv("CRYPTO_PAY_TOKEN", "424362:AAwflqg0KUlqoCnyxaUhEyFCVqUVsrOrPPr")
+CRYPTO_PAY_BASE_URL = os.getenv("CRYPTO_PAY_BASE_URL", "https://pay.crypt.bot/api")
 
 # Базовый URL сайта (для возвратов из Platega)
 SITE_URL = os.getenv("SITE_URL", "http://localhost:5000")
