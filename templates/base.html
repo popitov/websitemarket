@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Витрина — Hardcores Shop</title>
+  <title>{% block title %}Hardcores Shop — цифровая витрина{% endblock %}</title>
+  <meta name="description" content="MVP витрина Hardcores Shop: цифровые товары, доступы и подписки с быстрой оплатой.">
+  <meta name="theme-color" content="#04050b" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   {% if not session.get('user_id') and cfg.TELEGRAM_LOGIN_BOT %}
   <script async src="https://telegram.org/js/telegram-widget.js?22"
@@ -14,24 +19,33 @@
   {% endif %}
 </head>
 <body>
-<header class="site-header">
-  <div class="container nav">
-    <div class="brand"><a href="{{ url_for('main.index') }}">🏪 Hardcores Shop</a></div>
-    <nav>
-      <a href="{{ url_for('main.index') }}">Каталог</a>
-      <a href="{{ url_for('main.view_cart') }}">Корзина <span class="badge" id="cart-count">{{ cart_count }}</span></a>
-      <a href="{{ url_for('main.account') }}">Мой доступ</a>
-      {% if session.get('user_id') %}
-        {% if session.get('user_id')|int in cfg.ADMINS %}
-          <a href="{{ url_for('admin.index') }}">Админ</a>
+<div class="page">
+  <header class="site-header">
+    <div class="container nav">
+      <div class="brand">
+        <a href="{{ url_for('main.index') }}">
+          <span aria-hidden="true">🏪</span>
+          <span>Hardcores Shop</span>
+        </a>
+      </div>
+      <nav class="nav-links">
+        <a href="{{ url_for('main.index') }}">Каталог</a>
+        <a href="{{ url_for('main.view_cart') }}">Корзина <span class="badge" id="cart-count">{{ cart_count }}</span></a>
+        <a href="{{ url_for('main.account') }}">Мой доступ</a>
+        {% if session.get('user_id') %}
+          {% if session.get('user_id')|int in cfg.ADMINS %}
+            <a href="{{ url_for('admin.index') }}">Админ</a>
+          {% endif %}
+          <a href="{{ url_for('main.logout') }}">Выход</a>
+        {% else %}
+          <span class="badge soft">Войдите через Telegram</span>
         {% endif %}
-        <a href="{{ url_for('main.logout') }}">Выход</a>
-      {% endif %}
-    </nav>
-  </div>
-</header>
+      </nav>
+    </div>
+  </header>
 
-<main class="container">
+  <main class="main">
+    <div class="container">
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       <div class="flash-list">
@@ -42,7 +56,16 @@
     {% endif %}
   {% endwith %}
   {% block content %}{% endblock %}
-</main>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div>Hardcores Shop — MVP витрина цифровых продуктов. Оплата и выдача доступа работают в демо‑режиме.</div>
+      <div class="muted">Если часть функциональности ещё не готова, мы покажем заглушку и уведомим вас внутри интерфейса.</div>
+    </div>
+  </footer>
+</div>
 
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
