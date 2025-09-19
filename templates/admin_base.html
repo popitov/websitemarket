@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Админ‑панель</h1>
+{% if not session.get('user_id') or session.get('user_id')|int not in cfg.ADMINS %}
+  <p>Зайдите через Telegram как администратор (кнопка Telegram Login наверху страницы).</p>
+{% else %}
+  <ul class="inline-list">
+    <li><a class="btn" href="{{ url_for('admin.categories') }}">Категории</a></li>
+    <li><a class="btn" href="{{ url_for('admin.tariffs') }}">Товары</a></li>
+  </ul>
+{% endif %}
+{% endblock %}

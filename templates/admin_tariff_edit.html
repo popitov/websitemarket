@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ tariff and 'Редактировать товар' or 'Новый товар' }}</h1>
+<form method="post" class="card pad">
+  <div class="grid two">
+    <label>Название
+      <input type="text" name="name" value="{{ tariff.name if tariff else '' }}" required/>
+    </label>
+    <label>Цена (₽)
+      <input type="number" min="0" step="1" name="price" value="{{ tariff.price if tariff else 0 }}" required/>
+    </label>
+  </div>
+  <label>Описание
+    <textarea name="description" rows="5">{{ tariff.description if tariff else '' }}</textarea>
+  </label>
+  {% if not tariff %}
+  <label>Тип
+    <select name="t_type" id="t_type" onchange="onTypeChange(this.value)">
+      <option value="channel">Доступ в канал</option>
+      <option value="text">Текстовый контент</option>
+      <option value="bundle">Набор (bundle)</option>
+      <option value="status">Статус</option>
+    </select>
+  </label>
+  <div id="type-fields">
+    <div id="f-channel" class="type-field" style="display:none">
+      <label>Ссылка на исходный канал (опц.) <input type="text" name="source_link"/></label>
+    </div>
+    <div id="f-text" class="type-field" style="display:none">
+      <label>Текстовый контент <textarea name="text_content" rows="5"></textarea></label>
+    </div>
+    <div id="f-status" class="type-field" style="display:none">
+      <label>Имя статуса <input type="text" name="status_name"/></label>
+    </div>
+    <div id="f-bundle" class="type-field" style="display:none">
+      <p class="muted">Состав бандла выбирается после создания.</p>
+    </div>
+  </div>
+  {% else %}
+    {% if tariff.t_type == 'channel' %}
+      <label>Ссылка на исходный канал (опц.) <input type="text" name="source_link" value="{{ tariff.payload or '' }}"/></label>
+    {% elif tariff.t_type == 'text' %}
+      <label>Текстовый контент <textarea name="text_content" rows="5">{{ tariff.payload or '' }}</textarea></label>
+    {% elif tariff.t_type == 'status' %}
+      <label>Имя статуса <input type="text" name="status_name" value="{{ tariff.status_name or '' }}"/></label>
+    {% elif tariff.t_type == 'bundle' %}
+      <p>Состав бандла:</p>
+      <div class="grid two">
+        <div>
+          <p class="muted">Отметьте товары, входящие в бандл</p>
+          {% for p in all_tariffs %}
+          <label class="block">
+            <input type="checkbox" name="bundle_items" value="{{ p.id }}" {% if p.id in bundle_items %}checked{% endif %}/> {{ p.name }} ({{ p.price }} ₽)
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+
+  <label>Категория
+    <select name="category_id">
+      <option value="" {% if not tariff or not tariff.category_id %}selected{% endif %}>(нет)</option>
+      {% for c in categories %}
+      <option value="{{ c.id }}" {% if tariff and tariff.category_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  {% if tariff and tariff.t_type in ('channel','text','status') %}
+    <h3>Длительности подписки</h3>
+    {% if durations %}
+      <table class="table">
+        <tr><th>Название</th><th>Сек.</th><th>Цена</th><th></th></tr>
+        {% for d in durations %}
+        <tr>
+          <td>{{ d.name }}</td><td>{{ d.seconds }}</td><td>{{ d.price }} ₽</td>
+          <td>
+            <form method="post" action="{{ url_for('admin.delete_duration', tariff_id=tariff.id, duration_id=d.id) }}" onsubmit="return confirm('Удалить длительность?');">
+              <button class="btn danger" type="submit">Удалить</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      <p class="muted">Нет вариантов длительности — будет использоваться базовая цена.</p>
+    {% endif %}
+    <div class="grid three">
+      <label>Название <input type="text" name="new_duration_name"/></label>
+      <label>Секунды <input type="number" name="new_duration_seconds" min="60" step="60"/></label>
+      <label>Цена (₽) <input type="number" name="new_duration_price" min="0" step="1"/></label>
+    </div>
+    <label class="inline">
+      <input type="checkbox" name="new_duration_default"/> Сделать дефолтной
+    </label>
+  {% endif %}
+
+  <div class="right">
+    <a class="btn" href="{{ url_for('admin.tariffs') }}">Назад</a>
+    <button class="btn primary" type="submit">Сохранить</button>
+  </div>
+</form>
+
+<script>
+function onTypeChange(v){
+  const fs = ['f-channel','f-text','f-status','f-bundle'];
+  fs.forEach(id => document.getElementById(id).style.display='none');
+  if (v==='channel') document.getElementById('f-channel').style.display='block';
+  if (v==='text') document.getElementById('f-text').style.display='block';
+  if (v==='status') document.getElementById('f-status').style.display='block';
+  if (v==='bundle') document.getElementById('f-bundle').style.display='block';
+}
+const sel = document.getElementById('t_type');
+if (sel) onTypeChange(sel.value);
+</script>
+{% endblock %}

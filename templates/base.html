@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Витрина — Hardcores Shop</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% if not session.get('user_id') and cfg.TELEGRAM_LOGIN_BOT %}
+  <script async src="https://telegram.org/js/telegram-widget.js?22"
+          data-telegram-login="{{ cfg.TELEGRAM_LOGIN_BOT }}"
+          data-size="medium"
+          data-auth-url="{{ url_for('main.tg_login', _external=True) }}"
+          data-request-access="write"></script>
+  {% endif %}
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav">
+    <div class="brand"><a href="{{ url_for('main.index') }}">🏪 Hardcores Shop</a></div>
+    <nav>
+      <a href="{{ url_for('main.index') }}">Каталог</a>
+      <a href="{{ url_for('main.view_cart') }}">Корзина <span class="badge" id="cart-count">{{ cart_count }}</span></a>
+      <a href="{{ url_for('main.account') }}">Мой доступ</a>
+      {% if session.get('user_id') %}
+        {% if session.get('user_id')|int in cfg.ADMINS %}
+          <a href="{{ url_for('admin.index') }}">Админ</a>
+        {% endif %}
+        <a href="{{ url_for('main.logout') }}">Выход</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-list">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

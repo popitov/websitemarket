@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Оплата</h1>
+{% if amount and amount > 0 %}
+<p>Сумма к оплате: <strong>{{ amount }} ₽</strong></p>
+{% endif %}
+
+<div id="pay-block" class="card pad center">
+  <div id="qr-wrap">
+    <div id="qr-loading" class="spinner">Готовим QR…</div>
+    <img id="qr-img" src="" alt="QR" style="display:none; max-width:280px;"/>
+  </div>
+  <div id="fallback" style="display:none">
+    <p>Не удалось автоматически получить QR.</p>
+    {% if redirect_url %}
+      <a class="btn" href="{{ redirect_url }}" target="_blank">Открыть страницу оплаты</a>
+    {% endif %}
+  </div>
+  <div id="status" class="muted">Ожидаем подтверждение оплаты…</div>
+</div>
+
+<script>
+const pid = "{{ payment_id }}";
+async function loadQR() {
+  try {
+    const r = await fetch(`/api/platega_qr/${pid}`);
+    const data = await r.json();
+    if (data.ok && data.qr_url) {
+      const img = document.getElementById('qr-img');
+      img.src = data.qr_url;
+      img.style.display = 'block';
+      document.getElementById('qr-loading').style.display = 'none';
+    } else {
+      document.getElementById('qr-loading').style.display = 'none';
+      document.getElementById('fallback').style.display = 'block';
+    }
+  } catch (e) {
+    document.getElementById('qr-loading').style.display = 'none';
+    document.getElementById('fallback').style.display = 'block';
+  }
+}
+async function pollStatus() {
+  try {
+    const r = await fetch(`/api/payment_status/${pid}`);
+    const data = await r.json();
+    if (data.ok && data.status === 'confirmed') {
+      document.getElementById('status').innerText = '✅ Оплата подтверждена! Перенаправляем…';
+      setTimeout(() => { window.location = '/account'; }, 1200);
+    } else if (data.status === 'pending') {
+      setTimeout(pollStatus, {{ cfg.PAYMENT_POLL_INTERVAL }} * 1000);
+    } else {
+      // ошибка или иное состояние
+      setTimeout(pollStatus, {{ cfg.PAYMENT_POLL_INTERVAL }} * 1000);
+    }
+  } catch (e) {
+    setTimeout(pollStatus, {{ cfg.PAYMENT_POLL_INTERVAL }} * 1000);
+  }
+}
+loadQR();
+pollStatus();
+</script>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Мой доступ</h1>
+
+{% if purchases and purchases|length > 0 %}
+<h3>Покупки, привязанные к Telegram</h3>
+<table class="table">
+  <tr><th>Товар</th><th>Доступ / Контент</th><th>Статус</th><th></th></tr>
+  {% for p in purchases %}
+  <tr>
+    <td><strong>{{ p.tariff_name }}</strong> <span class="muted">({{ p.t_type }})</span></td>
+    <td>
+      {% if p.t_type == 'text' %}
+        <div class="text-box">{{ p.link }}</div>
+      {% elif p.t_type == 'channel' %}
+        {% if p.link %}<a class="btn" href="{{ p.link }}" target="_blank">Вступить в канал</a>{% else %}<span class="muted">Ссылка недоступна</span>{% endif %}
+      {% elif p.t_type == 'status' %}
+        <code>{{ p.link }}</code>
+      {% else %}
+        {% if p.link %}<a href="{{ p.link }}" target="_blank">Ссылка</a>{% endif %}
+      {% endif %}
+    </td>
+    <td>
+      {% if p.ttl_seconds and p.ttl_seconds > 0 %}
+        {% if p.expires_at_h %}Действует до {{ p.expires_at_h }}{% else %}Осталось {{ p.ttl_seconds }} сек.{% endif %}
+      {% else %}
+        Бессрочно / без таймера
+      {% endif %}
+    </td>
+    <td>
+      {% if p.t_type == 'channel' %}
+      <a class="link" href="{{ url_for('main.refresh_access', purchase_id=p.id) }}">Обновить ссылку</a>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+{% set guest = guest_purchases or [] %}
+{% if guest and guest|length > 0 %}
+<h3>Покупки на этом устройстве (без Telegram)</h3>
+<ul class="guest-list">
+  {% for g in guest %}
+  <li>
+    <strong>{{ g.name }}</strong> — 
+    {% if g.type == 'text' %}
+      <span class="muted">текст:</span> <span class="text-inline">{{ g.content }}</span>
+    {% elif g.type == 'status' %}
+      <span class="muted">код/ссылка:</span> <code>{{ g.link }}</code>
+    {% else %}
+      <span class="muted">тип:</span> {{ g.type }}
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% if (not purchases or purchases|length == 0) and (not guest or guest|length == 0) %}
+<p>Пока нет покупок.</p>
+{% endif %}
+{% endblock %}

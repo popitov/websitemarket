@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Корзина</h1>
+
+{% if items %}
+<table class="table">
+  <tr><th>Товар</th><th>Цена</th><th>Кол-во</th><th>Сумма</th><th></th></tr>
+  {% for it in items %}
+  <tr>
+    <td>{{ it.name }}{% if it.duration_name %} <span class="muted">({{ it.duration_name }})</span>{% endif %}</td>
+    <td>{{ it.price }} ₽</td>
+    <td>{{ it.quantity }}</td>
+    <td>{{ it.subtotal }} ₽</td>
+    <td><a class="link" href="{{ url_for('main.remove_from_cart', tariff_id=it.tariff_id) }}">Удалить</a></td>
+  </tr>
+  {% endfor %}
+  <tr class="total">
+    <td colspan="3" class="right">Итого:</td>
+    <td><strong>{{ total }} ₽</strong></td>
+    <td></td>
+  </tr>
+  {% if promo %}
+  <tr>
+    <td colspan="3" class="right">Промокод {{ promo.code }}:</td>
+    <td>− {{ discount }} ₽</td><td></td>
+  </tr>
+  <tr class="total">
+    <td colspan="3" class="right">К оплате:</td>
+    <td><strong>{{ total_after }} ₽</strong></td>
+    <td></td>
+  </tr>
+  {% endif %}
+</table>
+
+<div class="grid two">
+  <form action="{{ url_for('main.apply_promo') }}" method="post" class="card pad">
+    <label>Промокод</label>
+    <div class="row">
+      <input type="text" name="promo_code" placeholder="Введите код" value="{{ promo.code if promo else '' }}"/>
+      <button class="btn" type="submit">{{ promo and 'Удалить' or 'Применить' }}</button>
+    </div>
+  </form>
+
+  <form action="{{ url_for('main.checkout') }}" method="post" class="card pad right">
+    <button class="btn primary" type="submit">Перейти к оплате</button>
+  </form>
+</div>
+{% else %}
+<p>Корзина пуста.</p>
+{% endif %}
+{% endblock %}

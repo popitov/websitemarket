@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ category and 'Редактировать категорию' or 'Новая категория' }}</h1>
+<form method="post" class="card pad">
+  <label>Название
+    <input type="text" name="name" value="{{ category.name if category else '' }}" required/>
+  </label>
+  <label>Описание
+    <textarea name="description" rows="4">{{ category.description if category else '' }}</textarea>
+  </label>
+  <label>Родительская
+    <select name="parent_id">
+      <option value="" {% if not category or not category.parent_id %}selected{% endif %}>(нет)</option>
+      {% for c in all_categories %}
+        {% if not category or c.id != category.id %}
+        <option value="{{ c.id }}" {% if category and category.parent_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+  </label>
+  <div class="right">
+    <a class="btn" href="{{ url_for('admin.categories') }}">Отмена</a>
+    <button class="btn primary" type="submit">Сохранить</button>
+  </div>
+</form>
+{% if category %}
+<form method="post" action="{{ url_for('admin.delete_category', cat_id=category.id) }}" onsubmit="return confirm('Удалить категорию?');">
+  <button class="btn danger" type="submit">Удалить</button>
+</form>
+{% endif %}
+{% endblock %}
